@@ -4,4 +4,9 @@ metadata:
   name: nodesimulator-sample
 spec:
   # Add fields here
-  foo: bar
+  cpu: "1000"
+  memory: "1000"
+  prefix: "test"
+  podNumber: "100"
+  podCidr: "172.12.1.0/8"
+  number: 1500

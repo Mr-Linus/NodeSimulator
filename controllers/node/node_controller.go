@@ -93,9 +93,9 @@ func (r *NodeSimulatorReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	}
 
 	if !isCreated{
-		r.CreatFakeNode(ctx,nodeSim)
+		r.CreateFakeNode(ctx,nodeSim)
 	}else {
-		r.UpdateFakeNode(ctx,nodeSim)
+		r.CreateFakeNode(ctx,nodeSim)
 	}
 
 	return ctrl.Result{}, nil
@@ -103,7 +103,7 @@ func (r *NodeSimulatorReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 
 
-func (r *NodeSimulatorReconciler) CreatFakeNode(ctx context.Context,nodeSim *simv1.NodeSimulator) {
+func (r *NodeSimulatorReconciler) CreateFakeNode(ctx context.Context,nodeSim *simv1.NodeSimulator) {
 	// Filter
 	if nodeSim.Spec.Number <= 0 {
 		return

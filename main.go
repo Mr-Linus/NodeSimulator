@@ -53,7 +53,10 @@ func main() {
 		o.Development = true
 	}))
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	mgrConfig := ctrl.GetConfigOrDie()
+	mgrConfig.QPS = 1000
+	mgrConfig.Burst = 1000
+	mgr, err := ctrl.NewManager(mgrConfig, ctrl.Options{
 		Scheme:             scheme,
 		MetricsBindAddress: metricsAddr,
 		LeaderElection:     enableLeaderElection,
