@@ -1,0 +1,7 @@
+apiVersion: sim.k8s.io/v1
+kind: NodeSimulator
+metadata:
+  name: nodesimulator-sample
+spec:
+  # Add fields here
+  foo: bar

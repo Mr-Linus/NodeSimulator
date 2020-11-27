@@ -1,0 +1,7 @@
+domain: k8s.io
+repo: github.com/NJUPT-ISL/NodeSimulator
+resources:
+- group: sim
+  kind: NodeSimulator
+  version: v1
+version: "2"
