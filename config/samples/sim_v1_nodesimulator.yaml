@@ -3,9 +3,8 @@ kind: NodeSimulator
 metadata:
   name: nodesimulator-sample
 spec:
-  # Add fields here
   cpu: "1000"
-  memory: "1000"
+  memory: "1Gi"
   prefix: "test"
   podNumber: "100"
   podCidr: "172.12.1.0/8"
