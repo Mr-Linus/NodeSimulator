@@ -9,4 +9,4 @@ spec:
   prefix: "test"
   podNumber: "100"
   podCidr: "172.12.1.0/8"
-  number: 1500
+  number: 1

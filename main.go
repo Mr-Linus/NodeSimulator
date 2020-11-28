@@ -19,8 +19,8 @@ import (
 	"flag"
 	"os"
 
-	simv1 "github.com/NJUPT-ISL/NodeSimulator/api/v1"
-	"github.com/NJUPT-ISL/NodeSimulator/controllers/node"
+	simv1 "github.com/NJUPT-ISL/NodeSimulator/pkg/api/v1"
+	"github.com/NJUPT-ISL/NodeSimulator/pkg/controllers/node"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
