@@ -17,6 +17,10 @@ package main
 
 import (
 	"flag"
+	scv1 "github.com/NJUPT-ISL/SCV/api/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/util/workqueue"
+	"k8s.io/klog"
 	"os"
 
 	simv1 "github.com/NJUPT-ISL/NodeSimulator/pkg/api/v1"
@@ -36,7 +40,7 @@ var (
 
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
-
+	_ = scv1.AddToScheme(scheme)
 	_ = simv1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
@@ -67,8 +71,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&node.NodeSimulatorReconciler{
+	// Init ClientSet
+	clientSet,err := kubernetes.NewForConfig(mgrConfig)
+	if err != nil {
+		setupLog.Error(err, "unable to init clientSet")
+		os.Exit(1)
+	}
+
+	if err = (&node.NodeSimReconciler{
 		Client: mgr.GetClient(),
+		ClientSet: clientSet,
 		Log:    ctrl.Log.WithName("controllers").WithName("NodeSimulator"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
@@ -76,6 +88,18 @@ func main() {
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
+
+	stopChan := make(chan struct{},0)
+	nodeUpdater,err := node.NewNodeUpdater(mgr.GetClient(),
+		workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
+		stopChan)
+
+
+	if err == nil {
+		go nodeUpdater.Run(5,stopChan)
+	}else {
+		klog.Errorf("New NodeUpdate Error: %v",err)
+	}
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

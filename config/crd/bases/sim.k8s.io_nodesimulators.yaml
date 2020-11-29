@@ -39,11 +39,11 @@ spec:
             gpu:
               properties:
                 bandwidth:
-                  type: integer
+                  type: string
                 core:
-                  type: integer
+                  type: string
                 memory:
-                  type: integer
+                  type: string
                 number:
                   type: integer
               type: object

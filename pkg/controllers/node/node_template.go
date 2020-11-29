@@ -6,18 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog"
-)
-
-const (
-	ManageLabelKey = "sim.k8s.io/managed"
-	ManageLabelValue = "true"
-	UniqueLabelKey = "sim.k8s.io/id"
-	NodeOS = "linux"
-	NodeArch = "amd64"
-	NodeOSImage = "CentOS Linux 7 (Core)"
-	NodeKernel = "3.10.0.el7.x86_64"
-	NodeKubeletVersion = "v1.19.1"
-	NodeDockerVersion = "docker://18.6.3"
+	"strconv"
 )
 
 func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node,error){
@@ -62,6 +51,7 @@ func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node,error){
 				"memory": memory,
 				"pods": pods,
 			},
+
 			NodeInfo: v1.NodeSystemInfo{
 				OperatingSystem: NodeOS,
 				Architecture: NodeArch,
@@ -73,6 +63,42 @@ func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node,error){
 			},
 		},
 	}
+
+	if nodesim.Spec.Gpu.Number > 0{
+		number,err := resource.ParseQuantity(strconv.Itoa(nodesim.Spec.Gpu.Number))
+		if err != nil {
+			klog.Errorf("NodeSim: %v/%v GPU Number ParseQuantity Error: %v",nodesim.GetNamespace(),nodesim.GetName(),err)
+			return nil, err
+		}
+		node.Status.Allocatable["gpu/number"] = number
+		node.Status.Capacity["gpu/number"] = number
+
+		bandwidth,err := resource.ParseQuantity(nodesim.Spec.Gpu.Bandwidth)
+		if err != nil {
+			klog.Errorf("NodeSim: %v/%v GPU Bandwidth ParseQuantity Error: %v",nodesim.GetNamespace(),nodesim.GetName(),err)
+			return nil, err
+		}
+		node.Status.Allocatable["gpu/bandwidth"] = bandwidth
+		node.Status.Capacity["gpu/bandwidth"] = bandwidth
+
+		memory,err := resource.ParseQuantity(nodesim.Spec.Gpu.Memory)
+		if err != nil {
+			klog.Errorf("NodeSim: %v/%v GPU Memory ParseQuantity Error: %v",nodesim.GetNamespace(),nodesim.GetName(),err)
+			return nil, err
+		}
+		node.Status.Allocatable["gpu/memory"] = memory
+		node.Status.Capacity["gpu/memory"] = memory
+
+		core,err := resource.ParseQuantity(nodesim.Spec.Gpu.Core)
+		if err != nil {
+			klog.Errorf("NodeSim: %v/%v GPU Core ParseQuantity Error: %v",nodesim.GetNamespace(),nodesim.GetName(),err)
+			return nil, err
+		}
+		node.Status.Allocatable["gpu/core"] = core
+		node.Status.Capacity["gpu/core"] = core
+
+	}
+
 	return node, nil
 }
 

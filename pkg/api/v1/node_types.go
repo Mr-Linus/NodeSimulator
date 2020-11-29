@@ -35,9 +35,9 @@ type NodeSimulatorSpec struct {
 
 type GPU struct {
 	Number int `json:"number,omitempty"`
-	Memory int `json:"memory,omitempty"`
-	Core   int `json:"core,omitempty"`
-	Bandwidth int  `json:"bandwidth,omitempty"`
+	Memory string `json:"memory,omitempty"`
+	Core   string `json:"core,omitempty"`
+	Bandwidth string  `json:"bandwidth,omitempty"`
 }
 
 // NodeSimulatorStatus defines the observed state of NodeSimulator

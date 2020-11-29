@@ -1,11 +1,16 @@
 apiVersion: sim.k8s.io/v1
 kind: NodeSimulator
 metadata:
-  name: nodesimulator-sample
+  name: titan-node
 spec:
-  cpu: "1000"
-  memory: "1Gi"
+  cpu: "40k"
+  memory: "200Gi"
   prefix: "test"
   podNumber: "100"
   podCidr: "172.12.1.0/8"
-  number: 1
+  number: 1000
+  gpu:
+    number: 2
+    core: "3200"
+    memory: "32000"
+    bandwidth: "5000"
