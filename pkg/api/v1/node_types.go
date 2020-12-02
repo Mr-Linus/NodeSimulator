@@ -24,7 +24,6 @@ import (
 
 // NodeSimulatorSpec defines the desired state of NodeSimulator
 type NodeSimulatorSpec struct {
-	Prefix    string `json:"prefix"`
 	Cpu       string `json:"cpu"`
 	Memory    string `json:"memory"`
 	PodNumber string `json:"podNumber"`

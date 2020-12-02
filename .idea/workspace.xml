@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="50a0f2d5-1284-404a-b4fb-6a70df043d6a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator-2.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/deployment.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/pod.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/controllers/pod/pod_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/manager/kustomization.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/manager/kustomization.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/v1/node_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/v1/node_types.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/v1/zz_generated.deepcopy.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/const.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/const.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_template.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_template.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_updater.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_updater.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/util/parallelize.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/util/parallelize.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/util/patch.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/util/patch.go" afterDir="false" />
-    </list>
+    <list default="true" id="50a0f2d5-1284-404a-b4fb-6a70df043d6a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

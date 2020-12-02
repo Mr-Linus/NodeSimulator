@@ -22,7 +22,6 @@ metadata:
 spec:
   cpu: "20k"
   memory: "512Gi"
-  prefix: "test"
   podNumber: "100"
   podCidr: "172.12.1.0/8"
   number: 100

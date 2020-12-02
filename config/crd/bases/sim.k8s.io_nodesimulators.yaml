@@ -55,15 +55,12 @@ spec:
               type: string
             podNumber:
               type: string
-            prefix:
-              type: string
           required:
           - cpu
           - memory
           - number
           - podCidr
           - podNumber
-          - prefix
           type: object
         status:
           description: NodeSimulatorStatus defines the observed state of NodeSimulator
