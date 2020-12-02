@@ -22,22 +22,21 @@ import (
 
 // NodeSimulatorReconciler reconciles a NodeSimulator object
 type NodeUpdater struct {
-	Client client.Client
-	Queue workqueue.RateLimitingInterface
+	Client   client.Client
+	Queue    workqueue.RateLimitingInterface
 	StopChan chan struct{}
 }
 
-func NewNodeUpdater(updaterClient client.Client,queue workqueue.RateLimitingInterface,stopChan chan struct{}) (*NodeUpdater,error){
-	if updaterClient == nil || queue == nil || stopChan == nil{
-		return nil,errors.New("New NodeUpdate Error, parameters contains nil ")
+func NewNodeUpdater(updaterClient client.Client, queue workqueue.RateLimitingInterface, stopChan chan struct{}) (*NodeUpdater, error) {
+	if updaterClient == nil || queue == nil || stopChan == nil {
+		return nil, errors.New("New NodeUpdate Error, parameters contains nil ")
 	}
 	return &NodeUpdater{
-		Client: updaterClient,
-		Queue: queue,
+		Client:   updaterClient,
+		Queue:    queue,
 		StopChan: stopChan,
-	},nil
+	}, nil
 }
-
 
 func (n *NodeUpdater) processNextItem() bool {
 
@@ -52,9 +51,9 @@ func (n *NodeUpdater) processNextItem() bool {
 	// parallel.
 	defer n.Queue.Done(key)
 
-	if node,ok := key.(*v1.Node);ok{
-		n.SyncNode(ctx,node)
-	}else {
+	if node, ok := key.(*v1.Node); ok {
+		n.SyncNode(ctx, node)
+	} else {
 		klog.Errorf("Key in Queue is not Node Type. ")
 	}
 	// Invoke the method containing the business logic
@@ -66,29 +65,29 @@ func (n *NodeUpdater) runWorker() {
 	}
 }
 
-func (n *NodeUpdater) InitUpdater(){
+func (n *NodeUpdater) InitUpdater() {
 	for {
+		time.Sleep(30 * time.Second)
 		nodeList := &v1.NodeList{}
-		err := n.Client.List(context.TODO(),nodeList)
+		err := n.Client.List(context.TODO(), nodeList)
 		if err != nil {
-			klog.Errorf("List Node Error: %v",err)
+			klog.Errorf("List Node Error: %v", err)
 			continue
 		}
 		if nodeList.Items != nil && len(nodeList.Items) > 0 {
-			for _,node := range nodeList.Items{
+			for _, node := range nodeList.Items {
 				labels := node.GetLabels()
 				if labels != nil {
-					if v,ok :=  labels[ManageLabelKey];ok && v == ManageLabelValue{
+					if v, ok := labels[ManageLabelKey]; ok && v == ManageLabelValue {
 						n.Queue.Add(node.DeepCopy())
 					}
 				}
 			}
 		}
-		time.Sleep(30 * time.Second)
 	}
 }
 
-func (n *NodeUpdater)  Run(threadiness int, stopCh chan struct{}) {
+func (n *NodeUpdater) Run(threadiness int, stopCh chan struct{}) {
 	defer runtime.HandleCrash()
 
 	// Let the workers stop when we are done
@@ -105,20 +104,19 @@ func (n *NodeUpdater)  Run(threadiness int, stopCh chan struct{}) {
 	klog.Info("Stopping Node-Updater")
 }
 
-func (n *NodeUpdater) SyncNode(ctx context.Context,node *v1.Node) {
+func (n *NodeUpdater) SyncNode(ctx context.Context, node *v1.Node) {
 
-
-	updateTime := metav1.Time{Time:time.Now()}
+	updateTime := metav1.Time{Time: time.Now()}
 
 	// Update Node
 	conditions := []v1.NodeCondition{
 		{
-			LastHeartbeatTime: updateTime,
+			LastHeartbeatTime:  updateTime,
 			LastTransitionTime: updateTime,
-			Message: KubeletMessage,
-			Status: v1.ConditionTrue,
-			Reason: KubeletReason,
-			Type: v1.NodeReady,
+			Message:            KubeletMessage,
+			Status:             v1.ConditionTrue,
+			Reason:             KubeletReason,
+			Type:               v1.NodeReady,
 		},
 		{
 			LastTransitionTime: updateTime,
@@ -129,64 +127,64 @@ func (n *NodeUpdater) SyncNode(ctx context.Context,node *v1.Node) {
 			Type:               OutOfDiskPressure,
 		},
 		{
-			LastHeartbeatTime: updateTime,
+			LastHeartbeatTime:  updateTime,
 			LastTransitionTime: updateTime,
-			Message: MemoryMessage,
-			Status: v1.ConditionFalse,
-			Reason: MemoryReason,
-			Type: v1.NodeMemoryPressure,
+			Message:            MemoryMessage,
+			Status:             v1.ConditionFalse,
+			Reason:             MemoryReason,
+			Type:               v1.NodeMemoryPressure,
 		},
 		{
 			LastTransitionTime: updateTime,
-			LastHeartbeatTime: updateTime,
-			Message: DiskPressureMessage,
-			Status: v1.ConditionFalse,
-			Reason: DiskPressureReason,
-			Type: v1.NodeDiskPressure,
+			LastHeartbeatTime:  updateTime,
+			Message:            DiskPressureMessage,
+			Status:             v1.ConditionFalse,
+			Reason:             DiskPressureReason,
+			Type:               v1.NodeDiskPressure,
 		},
 		{
-			LastHeartbeatTime: updateTime,
+			LastHeartbeatTime:  updateTime,
 			LastTransitionTime: updateTime,
-			Message: RouteMessage,
-			Status: v1.ConditionFalse,
-			Reason: RouteReason,
-			Type: v1.NodeNetworkUnavailable,
+			Message:            RouteMessage,
+			Status:             v1.ConditionFalse,
+			Reason:             RouteReason,
+			Type:               v1.NodeNetworkUnavailable,
 		},
 	}
 	ops := []util.Ops{
 		{
 			Op:    "replace",
-			Path: "/status/conditions",
+			Path:  "/status/conditions",
 			Value: conditions,
 		},
 	}
-	if err := n.Client.Status().Patch(ctx,node,&util.Patch{PatchOps: ops});err != nil {
-		klog.Errorf("Sync Node: %v Error: %v",node.GetName(),err)
+	if err := n.Client.Status().Patch(ctx, node, &util.Patch{PatchOps: ops}); err != nil {
+		klog.Errorf("Sync Node: %v Error: %v", node.GetName(), err)
 	}
 
 	nodeName := node.GetName()
 	leasePeriod := int32(40)
-	renewTime := metav1.MicroTime{Time:time.Now()}
+	renewTime := metav1.MicroTime{Time: time.Now()}
 	lease := &cov1.Lease{}
 	newLease := &cov1.Lease{
-		ObjectMeta:metav1.ObjectMeta{
-			Name: node.GetName(),
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      node.GetName(),
 			Namespace: "kube-node-lease",
 		},
 		Spec: cov1.LeaseSpec{
-			HolderIdentity: &nodeName,
+			HolderIdentity:       &nodeName,
 			LeaseDurationSeconds: &leasePeriod,
-			RenewTime: &renewTime,
+			RenewTime:            &renewTime,
 		},
 	}
-	err := n.Client.Get(ctx,types.NamespacedName{
-		Name: node.GetName(),
+	err := n.Client.Get(ctx, types.NamespacedName{
+		Name:      node.GetName(),
 		Namespace: "kube-node-lease",
-	},lease)
-	if err != nil && apierrors.IsNotFound(err){
-		err := n.Client.Create(ctx,newLease)
+	}, lease)
+	if err != nil && apierrors.IsNotFound(err) {
+		err := n.Client.Create(ctx, newLease)
 		if err != nil {
-			klog.Errorf("Sync Node Lease: %v Error: %v",node.GetName(),err)
+			klog.Errorf("Sync Node Lease: %v Error: %v", node.GetName(), err)
 		}
 		return
 	}
@@ -194,13 +192,12 @@ func (n *NodeUpdater) SyncNode(ctx context.Context,node *v1.Node) {
 	leaseOps := []util.Ops{
 		{
 			Op:    "replace",
-			Path: "/spec",
+			Path:  "/spec",
 			Value: newLease.Spec,
 		},
 	}
-	if err := n.Client.Patch(ctx,lease,&util.Patch{PatchOps: leaseOps});err != nil {
-		klog.Errorf("Sync Node Lease: %v Error: %v",node.GetName(),err)
+	if err := n.Client.Patch(ctx, lease, &util.Patch{PatchOps: leaseOps}); err != nil {
+		klog.Errorf("Sync Node Lease: %v Error: %v", node.GetName(), err)
 	}
 
 }
-

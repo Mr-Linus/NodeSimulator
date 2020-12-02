@@ -34,14 +34,12 @@ import (
 	"time"
 )
 
-
-
 // NodeSimReconciler reconciles a NodeSimulator object
 type NodeSimReconciler struct {
 	client.Client
 	ClientSet *kubernetes.Clientset
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log       logr.Logger
+	Scheme    *runtime.Scheme
 }
 
 // +kubebuilder:rbac:groups=sim.k8s.io,resources=nodesimulators,verbs=get;list;watch;create;update;patch;delete
@@ -95,14 +93,14 @@ func (r *NodeSimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					klog.Errorf("NodeSim: %v Delete Node: %v Error: %v", req.NamespacedName.String(), node.GetName(), err)
 				}
 				scv := &scv1.Scv{}
-				err = r.Client.Get(ctx,types.NamespacedName{Name: node.GetName()},scv)
-				if err != nil && !apierrors.IsNotFound(err){
-					klog.Errorf("Get Scv: %v Error: %v",node.GetName(),err)
+				err = r.Client.Get(ctx, types.NamespacedName{Name: node.GetName()}, scv)
+				if err != nil && !apierrors.IsNotFound(err) {
+					klog.Errorf("Get Scv: %v Error: %v", node.GetName(), err)
 				}
 				if err == nil {
-					err = r.Client.Delete(ctx,scv)
+					err = r.Client.Delete(ctx, scv)
 					if err != nil {
-						klog.Errorf("Delete Scv: %v Error: %v",node.GetName(),err)
+						klog.Errorf("Delete Scv: %v Error: %v", node.GetName(), err)
 					}
 				}
 			}
@@ -126,14 +124,14 @@ func (r *NodeSimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 
 			scv := &scv1.Scv{}
-			err = r.Client.Get(ctx,types.NamespacedName{Name: node.GetName()},scv)
-			if err != nil && !apierrors.IsNotFound(err){
-				klog.Errorf("Get Scv: %v Error: %v",node.GetName(),err)
+			err = r.Client.Get(ctx, types.NamespacedName{Name: node.GetName()}, scv)
+			if err != nil && !apierrors.IsNotFound(err) {
+				klog.Errorf("Get Scv: %v Error: %v", node.GetName(), err)
 			}
 			if err == nil {
-				err = r.Client.Delete(ctx,scv)
+				err = r.Client.Delete(ctx, scv)
 				if err != nil {
-					klog.Errorf("Delete Scv: %v Error: %v",node.GetName(),err)
+					klog.Errorf("Delete Scv: %v Error: %v", node.GetName(), err)
 				}
 			}
 		}
@@ -168,7 +166,7 @@ func (r *NodeSimReconciler) SyncFakeNode(ctx context.Context, nodeSim *simv1.Nod
 
 		node.Status.Addresses = []v1.NodeAddress{
 			{
-				Type: v1.NodeHostName,
+				Type:    v1.NodeHostName,
 				Address: node.GetName(),
 			},
 		}
@@ -198,15 +196,14 @@ func (r *NodeSimReconciler) SyncFakeNode(ctx context.Context, nodeSim *simv1.Nod
 			newNode.Status.Allocatable = nodeTemplate.Status.Allocatable
 			newNode.Status.Capacity = nodeTemplate.Status.Capacity
 			newNode.Status.Addresses = node.Status.Addresses
-			_,_,err := util.PatchNodeStatus(r.ClientSet.CoreV1(),types.NodeName(node.GetName()),fakeNode,newNode)
+			_, _, err := util.PatchNodeStatus(r.ClientSet.CoreV1(), types.NodeName(node.GetName()), fakeNode, newNode)
 			if err != nil {
-				klog.Errorf("Patch Node: %v Error: %v",newNode.GetName(),err)
+				klog.Errorf("Patch Node: %v Error: %v", newNode.GetName(), err)
 			}
 		}
 	}
 
 	util.ParallelizeSyncNode(ctx, 5, nodeList, SyncNode)
-
 
 	SyncNodeGPU := func(ctx context.Context, node *v1.Node) {
 		if nodeSim.Spec.Gpu.Number <= 0 {
@@ -214,11 +211,11 @@ func (r *NodeSimReconciler) SyncFakeNode(ctx context.Context, nodeSim *simv1.Nod
 		}
 
 		curScv := &scv1.Scv{}
-		cardList := make([]scv1.Card,0)
+		cardList := make([]scv1.Card, 0)
 
 		memSum := uint64(0)
 
-		for i:=0; i < nodeSim.Spec.Gpu.Number;i++{
+		for i := 0; i < nodeSim.Spec.Gpu.Number; i++ {
 			card := scv1.Card{
 				ID:          uint(i),
 				Health:      "Healthy",
@@ -226,58 +223,57 @@ func (r *NodeSimReconciler) SyncFakeNode(ctx context.Context, nodeSim *simv1.Nod
 				Power:       250,
 				TotalMemory: strToUint64(nodeSim.Spec.Gpu.Memory),
 				Clock:       6000,
-				FreeMemory: strToUint64(nodeSim.Spec.Gpu.Memory),
-				Core: strToUint(nodeSim.Spec.Gpu.Core),
-				Bandwidth: strToUint(nodeSim.Spec.Gpu.Bandwidth),
+				FreeMemory:  strToUint64(nodeSim.Spec.Gpu.Memory),
+				Core:        strToUint(nodeSim.Spec.Gpu.Core),
+				Bandwidth:   strToUint(nodeSim.Spec.Gpu.Bandwidth),
 			}
-			cardList = append(cardList,card)
+			cardList = append(cardList, card)
 			memSum += strToUint64(nodeSim.Spec.Gpu.Memory)
 		}
 
-
-		updateTime := metav1.Time{Time:time.Now()}
+		updateTime := metav1.Time{Time: time.Now()}
 
 		scv := &scv1.Scv{
-			ObjectMeta:metav1.ObjectMeta{
+			ObjectMeta: metav1.ObjectMeta{
 				Name: node.GetName(),
 			},
 			Spec: scv1.ScvSpec{
 				UpdateInterval: 1000,
 			},
 			Status: scv1.ScvStatus{
-				CardList: cardList,
-				CardNumber: uint(nodeSim.Spec.Gpu.Number),
+				CardList:       cardList,
+				CardNumber:     uint(nodeSim.Spec.Gpu.Number),
 				TotalMemorySum: memSum,
-				FreeMemorySum: memSum,
-				UpdateTime: &updateTime,
+				FreeMemorySum:  memSum,
+				UpdateTime:     &updateTime,
 			},
 		}
 
-		err := r.Client.Get(ctx,types.NamespacedName{
+		err := r.Client.Get(ctx, types.NamespacedName{
 			Name: node.GetName(),
-		},curScv)
+		}, curScv)
 
 		if err != nil {
-			if apierrors.IsNotFound(err){
-				if err = r.Client.Create(ctx,scv);err != nil{
-					klog.Errorf("Create Scv: %v, Error: %v",node.GetName(),err)
+			if apierrors.IsNotFound(err) {
+				if err = r.Client.Create(ctx, scv); err != nil {
+					klog.Errorf("Create Scv: %v, Error: %v", node.GetName(), err)
 				}
-			}else {
-				klog.Errorf("Get Scv: %v, Error: %v",node.GetName(),err)
+			} else {
+				klog.Errorf("Get Scv: %v, Error: %v", node.GetName(), err)
 			}
 
-		}else {
+		} else {
 			ops := []util.Ops{
 				{
-					Op: "replace",
-					Path: "/status",
+					Op:    "replace",
+					Path:  "/status",
 					Value: scv.Status,
 				},
 			}
 
-			err = r.Client.Patch(ctx,curScv,&util.Patch{PatchOps: ops})
-			if err != nil{
-				klog.Errorf("Update Scv: %v, Error: %v",node.GetName(),err)
+			err = r.Client.Patch(ctx, curScv, &util.Patch{PatchOps: ops})
+			if err != nil {
+				klog.Errorf("Update Scv: %v, Error: %v", node.GetName(), err)
 			}
 		}
 

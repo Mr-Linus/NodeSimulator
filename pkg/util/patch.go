@@ -21,14 +21,13 @@ type Patch struct {
 	PatchOps []Ops
 }
 
-func (p Patch) Type() types.PatchType{
-	return  types.JSONPatchType
+func (p Patch) Type() types.PatchType {
+	return types.JSONPatchType
 }
 
-func (p *Patch) Data(obj runtime.Object) ([]byte, error){
+func (p *Patch) Data(obj runtime.Object) ([]byte, error) {
 	return json.Marshal(p.PatchOps)
 }
-
 
 // PatchNodeStatus patches node status.
 func PatchNodeStatus(c v1core.CoreV1Interface, nodeName types.NodeName, oldNode *v1.Node, newNode *v1.Node) (*v1.Node, []byte, error) {

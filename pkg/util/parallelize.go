@@ -8,7 +8,7 @@ import (
 
 const Workers = 5
 
-func ParallelizeSyncNode(ctx context.Context,workers int, nodelist []*v1.Node, Do func(ctx context.Context,node *v1.Node)) {
+func ParallelizeSyncNode(ctx context.Context, workers int, nodelist []*v1.Node, Do func(ctx context.Context, node *v1.Node)) {
 	var stop <-chan struct{}
 	pieces := len(nodelist)
 	toProcess := make(chan *v1.Node, pieces)
@@ -29,7 +29,7 @@ func ParallelizeSyncNode(ctx context.Context,workers int, nodelist []*v1.Node, D
 				case <-stop:
 					return
 				default:
-					Do(ctx,node)
+					Do(ctx, node)
 				}
 			}
 		}()

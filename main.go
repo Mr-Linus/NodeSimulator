@@ -72,33 +72,32 @@ func main() {
 	}
 
 	// Init ClientSet
-	clientSet,err := kubernetes.NewForConfig(mgrConfig)
+	clientSet, err := kubernetes.NewForConfig(mgrConfig)
 	if err != nil {
 		setupLog.Error(err, "unable to init clientSet")
 		os.Exit(1)
 	}
 
 	if err = (&node.NodeSimReconciler{
-		Client: mgr.GetClient(),
+		Client:    mgr.GetClient(),
 		ClientSet: clientSet,
-		Log:    ctrl.Log.WithName("controllers").WithName("NodeSimulator"),
-		Scheme: mgr.GetScheme(),
+		Log:       ctrl.Log.WithName("controllers").WithName("NodeSimulator"),
+		Scheme:    mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "NodeSimulator")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
 
-	stopChan := make(chan struct{},0)
-	nodeUpdater,err := node.NewNodeUpdater(mgr.GetClient(),
+	stopChan := make(chan struct{}, 0)
+	nodeUpdater, err := node.NewNodeUpdater(mgr.GetClient(),
 		workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
 		stopChan)
 
-
 	if err == nil {
-		go nodeUpdater.Run(5,stopChan)
-	}else {
-		klog.Errorf("New NodeUpdate Error: %v",err)
+		go nodeUpdater.Run(5, stopChan)
+	} else {
+		klog.Errorf("New NodeUpdate Error: %v", err)
 	}
 
 	setupLog.Info("starting manager")
