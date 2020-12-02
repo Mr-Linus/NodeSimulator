@@ -12,23 +12,9 @@ kubectl apply -f https://raw.githubusercontent.com/NJUPT-ISL/NodeSimulator/maste
 
 
 ## Simulate Node
-- Create 100 Nodes with 20 core & 512G memory in Cluster.
-```
-apiVersion: sim.k8s.io/v1
-kind: NodeSimulator
-metadata:
-  name: titan-node
-spec:
-  cpu: "20k"
-  memory: "512Gi"
-  prefix: "test"
-  podNumber: "100"
-  podCidr: "172.12.1.0/8"
-  number: 100
-```
 
-- Create 100 Nodes with 4 GPUs in Cluster.
-```
+- Create 100 Nodes with 20 core, 512G memory & 4 GPUs in Cluster.
+```yaml
 apiVersion: sim.k8s.io/v1
 kind: NodeSimulator
 metadata:
