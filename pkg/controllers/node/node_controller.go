@@ -21,6 +21,7 @@ import (
 	"github.com/NJUPT-ISL/NodeSimulator/pkg/util"
 	scv1 "github.com/NJUPT-ISL/SCV/api/v1"
 	"github.com/go-logr/logr"
+	cov1 "k8s.io/api/coordination/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -86,12 +87,14 @@ func (r *NodeSimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if nodeSim.GetDeletionTimestamp() != nil {
-		//TODO: Delete
 		if nodeList.Items != nil && len(nodeList.Items) > 0 {
 			for _, node := range nodeList.Items {
+				// Delete Node
 				if err := r.Client.Delete(ctx, node.DeepCopy()); err != nil {
 					klog.Errorf("NodeSim: %v Delete Node: %v Error: %v", req.NamespacedName.String(), node.GetName(), err)
 				}
+
+				// Delete Node
 				scv := &scv1.Scv{}
 				err = r.Client.Get(ctx, types.NamespacedName{Name: node.GetName()}, scv)
 				if err != nil && !apierrors.IsNotFound(err) {
@@ -102,6 +105,14 @@ func (r *NodeSimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					if err != nil {
 						klog.Errorf("Delete Scv: %v Error: %v", node.GetName(), err)
 					}
+				}
+
+				// Delete Node Lease
+				nodeLease := &cov1.Lease{}
+				nodeLease.SetName(node.GetName())
+				nodeLease.SetNamespace("kube-node-lease")
+				if err := r.Client.Delete(ctx, nodeLease); err != nil && !apierrors.IsNotFound(err) {
+					klog.Errorf("NodeSim: %v Delete Node Lease : %v Error: %v", req.String(), node, err)
 				}
 			}
 		}
@@ -116,13 +127,23 @@ func (r *NodeSimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	// Delete Nodes
 	if nodeList.Items != nil && len(nodeList.Items) > nodeSim.Spec.Number {
 		for i := nodeSim.Spec.Number; i < len(nodeList.Items); i++ {
+
+			//Delete Node
 			nodeName := nodeSim.GetNamespace() + "-" + nodeSim.GetName() + "-" + strconv.Itoa(i)
 			node := &v1.Node{}
 			node.SetName(nodeName)
 			if err := r.Client.Delete(ctx, node); err != nil && !apierrors.IsNotFound(err) {
 				klog.Errorf("NodeSim: %v Delete Node: %v Error: %v", req.String(), node, err)
 			}
+			// Delete Node Lease
+			nodeLease := &cov1.Lease{}
+			nodeLease.SetName(nodeName)
+			nodeLease.SetNamespace("kube-node-lease")
+			if err := r.Client.Delete(ctx, nodeLease); err != nil && !apierrors.IsNotFound(err) {
+				klog.Errorf("NodeSim: %v Delete Node Lease : %v Error: %v", req.String(), node, err)
+			}
 
+			// Delete Scv
 			scv := &scv1.Scv{}
 			err = r.Client.Get(ctx, types.NamespacedName{Name: node.GetName()}, scv)
 			if err != nil && !apierrors.IsNotFound(err) {

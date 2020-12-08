@@ -24,9 +24,12 @@ import (
 
 // NodeSimulatorSpec defines the desired state of NodeSimulator
 type NodeSimulatorSpec struct {
+	Region    string `json:"region"`
 	Cpu       string `json:"cpu"`
 	Memory    string `json:"memory"`
 	PodNumber string `json:"podNumber"`
+	Disk      string `json:"disk"`
+	Bandwidth string `json:"bandwidth"`
 	Number    int    `json:"number"`
 	PodCidr   string `json:"podCidr"`
 	Gpu       GPU    `json:"gpu,omitempty"`

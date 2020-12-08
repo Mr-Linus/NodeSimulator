@@ -3,8 +3,8 @@ package node
 import v1 "k8s.io/api/core/v1"
 
 const (
-	NodeSimFinalizer = "sim.k8s.io/NodeFinal"
-
+	NodeSimFinalizer   = "sim.k8s.io/NodeFinal"
+	RegionLabelKey     = "sim.k8s.io/region"
 	ManageLabelKey     = "sim.k8s.io/managed"
 	ManageLabelValue   = "true"
 	UniqueLabelKey     = "sim.k8s.io/id"

@@ -17,6 +17,7 @@ package main
 
 import (
 	"flag"
+	"github.com/NJUPT-ISL/NodeSimulator/pkg/controllers/pod"
 	scv1 "github.com/NJUPT-ISL/SCV/api/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/workqueue"
@@ -85,6 +86,15 @@ func main() {
 		Scheme:    mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "NodeSimulator")
+		os.Exit(1)
+	}
+
+	if err = (&pod.PodSimReconciler{
+		Client:    mgr.GetClient(),
+		ClientSet: clientSet,
+		Scheme:    mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "PodSimulator")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

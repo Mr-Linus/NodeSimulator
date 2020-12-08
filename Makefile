@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= registry.cn-hangzhou.aliyuncs.com/njupt-isl/nodesimulator:v1.1
+IMG ?= registry.cn-hangzhou.aliyuncs.com/njupt-isl/nodesimulator:v1.2
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 

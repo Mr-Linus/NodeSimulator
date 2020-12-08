@@ -13,6 +13,7 @@ func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node, error) {
 	labels := make(map[string]string, 0)
 	labels[ManageLabelKey] = ManageLabelValue
 	labels[UniqueLabelKey] = nodesim.GetNamespace() + "-" + nodesim.GetName()
+	labels[RegionLabelKey] = nodesim.Spec.Region
 	podcidr := make([]string, 0)
 	podcidr = append(podcidr, nodesim.Spec.PodCidr)
 	cpu, err := resource.ParseQuantity(nodesim.Spec.Cpu)
@@ -32,6 +33,18 @@ func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node, error) {
 		return nil, err
 	}
 
+	disk, err := resource.ParseQuantity(nodesim.Spec.Disk)
+	if err != nil {
+		klog.Errorf("NodeSim: %v/%v Disk ParseQuantity Error: %v", nodesim.GetNamespace(), nodesim.GetName(), err)
+		return nil, err
+	}
+
+	bandwidth, err := resource.ParseQuantity(nodesim.Spec.Bandwidth)
+	if err != nil {
+		klog.Errorf("NodeSim: %v/%v Bandwidth ParseQuantity Error: %v", nodesim.GetNamespace(), nodesim.GetName(), err)
+		return nil, err
+	}
+
 	node := &v1.Node{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: labels,
@@ -45,11 +58,15 @@ func GenNode(nodesim *simv1.NodeSimulator) (*v1.Node, error) {
 				"cpu":    cpu,
 				"memory": memory,
 				"pods":   pods,
+				"disk": disk,
+				"bandwidth": bandwidth,
 			},
 			Allocatable: map[v1.ResourceName]resource.Quantity{
 				"cpu":    cpu,
 				"memory": memory,
 				"pods":   pods,
+				"disk": disk,
+				"bandwidth": bandwidth,
 			},
 
 			NodeInfo: v1.NodeSystemInfo{
