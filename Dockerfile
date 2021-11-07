@@ -2,6 +2,5 @@ FROM debian:stretch-slim
 
 WORKDIR /
 
-COPY bin/manager /usr/local/bin
-
-CMD ["manager"]
+ADD bin/manager .
+CMD ["/manager"]

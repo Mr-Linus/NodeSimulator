@@ -34,33 +34,62 @@ spec:
         spec:
           description: NodeSimulatorSpec defines the desired state of NodeSimulator
           properties:
-            cpu:
-              type: string
-            gpu:
-              properties:
-                bandwidth:
-                  type: string
-                core:
-                  type: string
-                memory:
-                  type: string
-                number:
-                  type: integer
+            addresses:
+              items:
+                description: NodeAddress contains information for the node's address.
+                properties:
+                  address:
+                    description: The node address.
+                    type: string
+                  type:
+                    description: Node address type, one of Hostname, ExternalIP or
+                      InternalIP.
+                    type: string
+                required:
+                - address
+                - type
+                type: object
+              type: array
+            capacity:
+              additionalProperties:
+                type: string
+              description: ResourceList is a set of (resource name, quantity) pairs.
               type: object
-            memory:
-              type: string
             number:
               type: integer
-            podCidr:
-              type: string
-            podNumber:
-              type: string
+            podCIDRs:
+              items:
+                type: string
+              type: array
+            taints:
+              items:
+                description: The node this Taint is attached to has the "effect" on
+                  any pod that does not tolerate the Taint.
+                properties:
+                  effect:
+                    description: Required. The effect of the taint on pods that do
+                      not tolerate the taint. Valid effects are NoSchedule, PreferNoSchedule
+                      and NoExecute.
+                    type: string
+                  key:
+                    description: Required. The taint key to be applied to a node.
+                    type: string
+                  timeAdded:
+                    description: TimeAdded represents the time at which the taint
+                      was added. It is only written for NoExecute taints.
+                    format: date-time
+                    type: string
+                  value:
+                    description: Required. The taint value corresponding to the taint
+                      key.
+                    type: string
+                required:
+                - effect
+                - key
+                type: object
+              type: array
           required:
-          - cpu
-          - memory
           - number
-          - podCidr
-          - podNumber
           type: object
         status:
           description: NodeSimulatorStatus defines the observed state of NodeSimulator

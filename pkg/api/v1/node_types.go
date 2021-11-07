@@ -16,6 +16,7 @@ limitations under the License.
 package v1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -24,22 +25,11 @@ import (
 
 // NodeSimulatorSpec defines the desired state of NodeSimulator
 type NodeSimulatorSpec struct {
-	Region    string `json:"region"`
-	Cpu       string `json:"cpu"`
-	Memory    string `json:"memory"`
-	PodNumber string `json:"podNumber"`
-	Disk      string `json:"disk"`
-	Bandwidth string `json:"bandwidth"`
-	Number    int    `json:"number"`
-	PodCidr   string `json:"podCidr"`
-	Gpu       GPU    `json:"gpu,omitempty"`
-}
-
-type GPU struct {
-	Number    int    `json:"number,omitempty"`
-	Memory    string `json:"memory,omitempty"`
-	Core      string `json:"core,omitempty"`
-	Bandwidth string `json:"bandwidth,omitempty"`
+	Number    int              `json:"number"`
+	PodCIDRs  []string         `json:"podCIDRs,omitempty" protobuf:"bytes,7,opt,name=podCIDRs" patchStrategy:"merge"`
+	Taints    []v1.Taint       `json:"taints,omitempty" protobuf:"bytes,5,opt,name=taints"`
+	Addresses []v1.NodeAddress `json:"addresses,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,5,rep,name=addresses"`
+	Capacity  v1.ResourceList  `json:"capacity,omitempty" protobuf:"bytes,1,rep,name=capacity,casttype=ResourceList,castkey=ResourceName"`
 }
 
 // NodeSimulatorStatus defines the observed state of NodeSimulator

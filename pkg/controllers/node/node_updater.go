@@ -20,25 +20,25 @@ import (
 	"time"
 )
 
-// NodeSimulatorReconciler reconciles a NodeSimulator object
-type NodeUpdater struct {
+// Updater reconciles a NodeSimulator object
+type Updater struct {
 	Client   client.Client
 	Queue    workqueue.RateLimitingInterface
 	StopChan chan struct{}
 }
 
-func NewNodeUpdater(updaterClient client.Client, queue workqueue.RateLimitingInterface, stopChan chan struct{}) (*NodeUpdater, error) {
+func NewNodeUpdater(updaterClient client.Client, queue workqueue.RateLimitingInterface, stopChan chan struct{}) (*Updater, error) {
 	if updaterClient == nil || queue == nil || stopChan == nil {
 		return nil, errors.New("New NodeUpdate Error, parameters contains nil ")
 	}
-	return &NodeUpdater{
+	return &Updater{
 		Client:   updaterClient,
 		Queue:    queue,
 		StopChan: stopChan,
 	}, nil
 }
 
-func (n *NodeUpdater) processNextItem() bool {
+func (n *Updater) processNextItem() bool {
 
 	ctx := context.TODO()
 	// Wait until there is a new item in the working queue
@@ -60,12 +60,12 @@ func (n *NodeUpdater) processNextItem() bool {
 	return true
 }
 
-func (n *NodeUpdater) runWorker() {
+func (n *Updater) runWorker() {
 	for n.processNextItem() {
 	}
 }
 
-func (n *NodeUpdater) InitUpdater() {
+func (n *Updater) InitUpdater() {
 	for {
 		time.Sleep(30 * time.Second)
 		nodeList := &v1.NodeList{}
@@ -87,7 +87,7 @@ func (n *NodeUpdater) InitUpdater() {
 	}
 }
 
-func (n *NodeUpdater) Run(threadiness int, stopCh chan struct{}) {
+func (n *Updater) Run(threadiness int, stopCh chan struct{}) {
 	defer runtime.HandleCrash()
 
 	// Let the workers stop when we are done
@@ -104,7 +104,7 @@ func (n *NodeUpdater) Run(threadiness int, stopCh chan struct{}) {
 	klog.Info("Stopping Node-Updater")
 }
 
-func (n *NodeUpdater) SyncNode(ctx context.Context, node *v1.Node) {
+func (n *Updater) SyncNode(ctx context.Context, node *v1.Node) {
 
 	updateTime := metav1.Time{Time: time.Now()}
 

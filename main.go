@@ -18,7 +18,6 @@ package main
 import (
 	"flag"
 	"github.com/NJUPT-ISL/NodeSimulator/pkg/controllers/pod"
-	scv1 "github.com/NJUPT-ISL/SCV/api/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog"
@@ -41,7 +40,6 @@ var (
 
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
-	_ = scv1.AddToScheme(scheme)
 	_ = simv1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
@@ -79,7 +77,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&node.NodeSimReconciler{
+	if err = (&node.SimReconciler{
 		Client:    mgr.GetClient(),
 		ClientSet: clientSet,
 		Log:       ctrl.Log.WithName("controllers").WithName("NodeSimulator"),
@@ -89,7 +87,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&pod.PodSimReconciler{
+	if err = (&pod.SimReconciler{
 		Client:    mgr.GetClient(),
 		ClientSet: clientSet,
 		Scheme:    mgr.GetScheme(),

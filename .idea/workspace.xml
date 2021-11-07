@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="50a0f2d5-1284-404a-b4fb-6a70df043d6a" name="Default Changelist" comment="" />
+    <list default="true" id="50a0f2d5-1284-404a-b4fb-6a70df043d6a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/example/sim_v1_nodesimulator.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/NodeSimulator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NodeSimulator.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/crd/bases/sim.k8s.io_nodesimulators.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/crd/bases/sim.k8s.io_nodesimulators.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/manager/kustomization.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/manager/kustomization.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator-2.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/samples/sim_v1_nodesimulator.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy/deploy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/deploy.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pod.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pod.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/v1/node_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/v1/node_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/v1/zz_generated.deepcopy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_template.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_template.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controllers/node/node_updater.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/node/node_updater.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controllers/pod/pod_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controllers/pod/pod_controller.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,7 +37,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/Cellar/go/1.13.6/libexec" />
+  <component name="GOROOT" url="file:///usr/local/go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -24,18 +47,24 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
+    <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/config/samples" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/example" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="go.vgo" />
+    <property name="settings.editor.selected.configurable" value="go.sdk" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/example" />
       <recent name="$PROJECT_DIR$/config/samples" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -43,6 +72,25 @@
       <recent name="$PROJECT_DIR$/pkg" />
       <recent name="$PROJECT_DIR$/controllers/node" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="NodeSimulator" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="NodeSimulator" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
@@ -55,16 +103,5 @@
         <entry key="GOPROXY" value="https://goproxy.cn" />
       </map>
     </environment>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="826" y="513" key="SettingsEditor" timestamp="1606643308055">
-      <screen x="0" y="25" width="2467" height="1415" />
-    </state>
-    <state x="826" y="513" key="SettingsEditor/0.25.2467.1415@0.25.2467.1415" timestamp="1606643308055" />
-    <state x="828" y="513" key="SettingsEditor/0.25.2473.1415@0.25.2473.1415" timestamp="1606482625339" />
-    <state x="473" y="252" width="670" height="676" key="search.everywhere.popup" timestamp="1606556072941">
-      <screen x="0" y="25" width="1603" height="1025" />
-    </state>
-    <state x="473" y="252" width="670" height="676" key="search.everywhere.popup/0.25.1603.1025@0.25.1603.1025" timestamp="1606556072941" />
   </component>
 </project>
