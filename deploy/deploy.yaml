@@ -34,6 +34,15 @@ spec:
       labels:
         control-plane: controller-manager
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "sim.k8s.io/managed"
+                    operator: NotIn
+                    values:
+                      - "true"
       serviceAccount: nodesimulator
       hostNetwork: true
       containers:
@@ -42,7 +51,7 @@ spec:
             - --enable-leader-election
           command:
             - /manager
-          image: registry.cn-hangzhou.aliyuncs.com/njupt-isl/nodesimulator:v1.3.8
+          image: registry.cn-hangzhou.aliyuncs.com/njupt-isl/nodesimulator:v1.4.3
           name: manager
           resources:
             limits:

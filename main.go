@@ -98,7 +98,7 @@ func main() {
 	// +kubebuilder:scaffold:builder
 
 	stopChan := make(chan struct{}, 0)
-	nodeUpdater, err := node.NewNodeUpdater(mgr.GetClient(),
+	nodeUpdater, err := node.NewNodeUpdater(mgr.GetClient(), clientSet,
 		workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
 		stopChan)
 

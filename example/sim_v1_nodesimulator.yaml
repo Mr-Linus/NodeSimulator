@@ -5,9 +5,9 @@ metadata:
 spec:
   number: 2
   capacity:
-    cpu: "1"
+    cpu: "32"
     ephemeral-storage: 51539404Ki
-    memory: 1860868Ki
+    memory: 64Gi
     pods: "61"
     gpu:  "2"
   podCIDRs:

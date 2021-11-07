@@ -3,8 +3,16 @@ package node
 import (
 	"context"
 	"errors"
+	"fmt"
+	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/client-go/kubernetes"
+	"strconv"
+
 	"github.com/NJUPT-ISL/NodeSimulator/pkg/util"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -22,19 +30,21 @@ import (
 
 // Updater reconciles a NodeSimulator object
 type Updater struct {
-	Client   client.Client
-	Queue    workqueue.RateLimitingInterface
-	StopChan chan struct{}
+	Client    client.Client
+	ClientSet *kubernetes.Clientset
+	Queue     workqueue.RateLimitingInterface
+	StopChan  chan struct{}
 }
 
-func NewNodeUpdater(updaterClient client.Client, queue workqueue.RateLimitingInterface, stopChan chan struct{}) (*Updater, error) {
+func NewNodeUpdater(updaterClient client.Client, clientSet *kubernetes.Clientset, queue workqueue.RateLimitingInterface, stopChan chan struct{}) (*Updater, error) {
 	if updaterClient == nil || queue == nil || stopChan == nil {
 		return nil, errors.New("New NodeUpdate Error, parameters contains nil ")
 	}
 	return &Updater{
-		Client:   updaterClient,
-		Queue:    queue,
-		StopChan: stopChan,
+		Client:    updaterClient,
+		ClientSet: clientSet,
+		Queue:     queue,
+		StopChan:  stopChan,
 	}, nil
 }
 
@@ -67,18 +77,20 @@ func (n *Updater) runWorker() {
 
 func (n *Updater) InitUpdater() {
 	for {
-		time.Sleep(30 * time.Second)
+		time.Sleep(20 * time.Second)
 		nodeList := &v1.NodeList{}
-		err := n.Client.List(context.TODO(), nodeList)
+		err := n.Client.List(context.TODO(), nodeList, &client.ListOptions{
+			LabelSelector: labels.SelectorFromSet(map[string]string{ManageLabelKey: ManageLabelValue}),
+		})
 		if err != nil {
 			klog.Errorf("List Node Error: %v", err)
 			continue
 		}
 		if nodeList.Items != nil && len(nodeList.Items) > 0 {
 			for _, node := range nodeList.Items {
-				labels := node.GetLabels()
-				if labels != nil {
-					if v, ok := labels[ManageLabelKey]; ok && v == ManageLabelValue {
+				getLabels := node.GetLabels()
+				if getLabels != nil {
+					if v, ok := getLabels[ManageLabelKey]; ok && v == ManageLabelValue {
 						n.Queue.Add(node.DeepCopy())
 					}
 				}
@@ -108,7 +120,7 @@ func (n *Updater) SyncNode(ctx context.Context, node *v1.Node) {
 
 	updateTime := metav1.Time{Time: time.Now()}
 
-	// Update Node
+	// Update Node Conditions
 	conditions := []v1.NodeCondition{
 		{
 			LastHeartbeatTime:  updateTime,
@@ -162,7 +174,55 @@ func (n *Updater) SyncNode(ctx context.Context, node *v1.Node) {
 		klog.Errorf("Sync Node: %v Error: %v", node.GetName(), err)
 	}
 
+	// update allocate
 	nodeName := node.GetName()
+	podList, err := n.ClientSet.CoreV1().Pods("").List(metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%v=%v", ManageLabelKey, ManageLabelValue),
+		FieldSelector: fields.Set{"spec.nodeName": nodeName}.AsSelector().String(),
+	})
+	if err != nil {
+		klog.Errorf("Get Pod from node: %v Error: %v", nodeName, err)
+	} else {
+		resourceList := node.Status.Capacity.DeepCopy()
+		podCount := 0
+		if len(podList.Items) > 0 {
+			podCount = len(podList.Items)
+		}
+		for _, pod := range podList.Items {
+			for _, container := range pod.Spec.Containers {
+				for resourceName, value := range container.Resources.Limits {
+					// 当前值
+					totalValue := resourceList[resourceName]
+					// 当前值减去配额
+					totalValue.Sub(value)
+					// 更新值
+					resourceList[resourceName] = totalValue.DeepCopy()
+				}
+			}
+		}
+
+		if resourceList.Pods() != nil {
+			podQua, err := resource.ParseQuantity(strconv.Itoa(podCount))
+			if err != nil {
+				klog.Errorf("Get Pod Quota node: %v Error: %v", nodeName, err)
+			}
+			totalValue := resourceList[v1.ResourcePods]
+			totalValue.Sub(podQua)
+			resourceList[v1.ResourcePods] = totalValue.DeepCopy()
+		}
+
+		ops = []util.Ops{
+			{
+				Op:    "replace",
+				Path:  "/status/allocatable",
+				Value: resourceList,
+			},
+		}
+		if err = n.Client.Status().Patch(ctx, node, &util.Patch{PatchOps: ops}); err != nil {
+			klog.Errorf("Sync Node: %v Error: %v", node.GetName(), err)
+		}
+	}
+
 	leasePeriod := int32(40)
 	renewTime := metav1.MicroTime{Time: time.Now()}
 	lease := &cov1.Lease{}
@@ -177,7 +237,7 @@ func (n *Updater) SyncNode(ctx context.Context, node *v1.Node) {
 			RenewTime:            &renewTime,
 		},
 	}
-	err := n.Client.Get(ctx, types.NamespacedName{
+	err = n.Client.Get(ctx, types.NamespacedName{
 		Name:      node.GetName(),
 		Namespace: "kube-node-lease",
 	}, lease)

@@ -8,3 +8,7 @@ spec:
   containers:
     - image: nginx
       name: nginx
+      resources:
+        limits:
+          cpu: "4"
+          memory: "8Gi"
